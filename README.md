@@ -7,7 +7,6 @@ API con **FastAPI** y **PostgreSQL** para gestión de tickets, según la guía d
 En código reutilizable para las actividades 4 y 5:
 
 - `app/domain/actividad2.py` — roles, scopes por rol, estados del ticket, transiciones y prioridades.
-- [`docs/ACTIVIDAD_2.md`](docs/ACTIVIDAD_2.md) — texto y diagrama ER para entrega / consulta rápida.
 
 ## Actividad 3 (lo implementado aquí)
 
@@ -41,14 +40,14 @@ Al iniciar la aplicación se ejecuta `CREATE SCHEMA IF NOT EXISTS` y `create_all
 - El token incluye en el payload: `sub` (correo), `id_usuario`, `rol`, `scopes` (lista según `ROLE_SCOPES` en `app/domain/actividad2.py`) y `exp`.
 - Contraseñas: **bcrypt** al crear usuario (`POST /usuarios/`) y verificación en el login.
 - **Dependencias** en `app/deps.py`: `get_auth_context` (JWT + validación de scopes con `SecurityScopes`) y `get_current_user` (alias cómodo para rutas solo autenticadas).
-- **Ruta protegida de ejemplo:** **GET `/usuarios/me`** — sin `Authorization: Bearer` Swagger suele responder error de autenticación (**403** con `OAuth2PasswordBearer`; token inválido/expirado → **401**).
+- **Ruta protegida de ejemplo:** **GET `/usuarios/me`** — sin `Authorization: Bearer` responde **401**.
 
 ### Probar en Swagger
 
 1. `POST /usuarios/` — crear usuario con correo y contraseña.
 2. `POST /auth/token` — enviar el mismo correo en `username` y la contraseña en `password`.
 3. Copiar `access_token` → botón **Authorize** → pegar `Bearer <token>` o solo el token (Swagger añade `Bearer` según configuración).
-4. Ejecutar **GET `/usuarios/me`** y comprobar **200**; sin autorizar, error de autenticación (**403** o **401** según el caso).
+4. Ejecutar **GET `/usuarios/me`** y comprobar **200**; sin autorizar, **401**.
 
 ## Actividad 5 (autorización con scopes y reglas de negocio)
 
@@ -63,7 +62,7 @@ Al iniciar la aplicación se ejecuta `CREATE SCHEMA IF NOT EXISTS` y `create_all
 
 1. Python 3.10+ y PostgreSQL en ejecución.
 2. Crea la base de datos que uses en `DATABASE_URL` (el usuario PostgreSQL debe poder crear objetos en el schema indicado).
-3. Copia [`.env.example`](.env.example) a `.env` y completa los valores:
+3. Copia variables en `.env`:
    - `DATABASE_URL`
    - `DB_SCHEMA` — nombre del schema **asignado por el docente**
    - `SECRET_KEY`, `ALGORITHM`, `ACCESS_TOKEN_EXPIRE_MINUTES` (JWT; actividad 4)
@@ -82,15 +81,7 @@ pip install -r requirements.txt
 uvicorn app.main:app --reload
 ```
 
-Documentación interactiva: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs). La raíz [http://127.0.0.1:8000/](http://127.0.0.1:8000/) devuelve enlaces a `/docs`, OpenAPI y salud del servicio.
-
-### Pruebas unitarias (sin PostgreSQL)
-
-Las reglas de visibilidad y transiciones en `app/domain/ticket_rules.py` se pueden validar sin levantar la base de datos:
-
-```powershell
-python -m unittest discover -s tests -p "test_*.py" -v
-```
+Documentación interactiva: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs).
 
 ## Integrantes
 

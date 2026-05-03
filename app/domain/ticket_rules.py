@@ -2,12 +2,8 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 from app.domain.actividad2 import TRANSICIONES
-
-if TYPE_CHECKING:
-    from app import models
+from app import models
 
 ASSIGNABLE_ROLES = frozenset({"auxiliar", "tecnico_especializado"})
 
